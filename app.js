@@ -2,10 +2,11 @@ const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const bodyParser = require("body-parser");
 const app = express();
-const graphqlHttp = require('express-graphql').graphqlHTTP;
-const graphqlSchema = require('./graphql/schema');
-const graphqlResolver = require('./graphql/resolvers');
+const graphqlHttp = require("express-graphql").graphqlHTTP;
+const graphqlSchema = require("./graphql/schema");
+const graphqlResolver = require("./graphql/resolvers");
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -29,7 +30,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
-app.use(express.json()); // application/json
+app.use(bodyParser.json()); // application/json
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
@@ -46,10 +47,11 @@ app.use((req, res, next) => {
 });
 
 app.use(
-  '/graphql',
+  "/graphql",
   graphqlHttp({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
+    graphiql: true,
   })
 );
 
@@ -63,7 +65,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://mojak:0015166031@nodejs-store.tbcbg.mongodb.net/messages?retryWrites=true&w=majority",
+    "mongodb+srv://mojak:0015166031@nodejs-store.tbcbg.mongodb.net/messagegraph?retryWrites=true&w=majority",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then((result) => {
